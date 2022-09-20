@@ -1,0 +1,21 @@
+services:
+  app:
+    restart: always
+    env_file:
+      - .env
+    build:
+      context: ./
+      dockerfile: ./Dockerfile.dev
+    ports:
+      - 5050:5050
+      - 24678:24678
+    volumes:
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules
+  nginx:
+    restart: always
+    build:
+      context: ./nginx/dev
+    ports:
+      - 80:80
+      - 443:443
