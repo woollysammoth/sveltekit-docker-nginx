@@ -1,0 +1,33 @@
+services:
+  app:
+    restart: always
+    env_file:
+      - .env
+    build:
+      context: ./
+      dockerfile: ./Dockerfile.prod
+    ports:
+      - 5050:5050
+    volumes:
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules
+  nginx:
+    depends_on:
+      - app
+    restart: always
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    build:
+      context: ./nginx/prod
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./nginx/prod:/etc/nginx/conf.d
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+  certbot:
+    image: certbot/certbot:latest
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
