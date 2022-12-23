@@ -1,5 +1,4 @@
 import { sveltekit } from '@sveltejs/kit/vite';
-import type { UserConfig } from 'vite';
 import fs from 'fs';
 
 let httpsConfig = process.env.NODE_ENV === "development" ? {
@@ -8,8 +7,11 @@ let httpsConfig = process.env.NODE_ENV === "development" ? {
 } : false;
 
 /** @type {import('vite').UserConfig} */
-const config: UserConfig = {
+const config = {
 	plugins: [sveltekit()],
+	test: {
+		include: ['src/**/*.{test,spec}.{js,ts}']
+	},
 	server: {
 		strictPort: true,
 		watch: {
